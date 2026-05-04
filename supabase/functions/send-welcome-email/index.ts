@@ -18,8 +18,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY is not configured");
+    const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
+    if (!BREVO_API_KEY) throw new Error("BREVO_API_KEY is not configured");
 
     const htmlBody = `<!DOCTYPE html>
 <html>
@@ -76,32 +76,32 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
-    const resendRes = await fetch("https://api.resend.com/emails", {
+    const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "api-key": BREVO_API_KEY,
       },
       body: JSON.stringify({
-        from: "DropDigital <onboarding@resend.dev>",
-        to: [email],
+        sender: { name: "DropDigital", email: "ilias.entreprise@gmail.com" },
+        to: [{ email: email, name: prenom }],
         subject: "⚡ Ton outil DropDigital est prêt",
-        html: htmlBody,
+        htmlContent: htmlBody,
       }),
     });
 
-    const resendData = await resendRes.json();
+    const brevoData = await brevoRes.json();
 
-    if (!resendRes.ok) {
-      console.error("Resend error:", resendData);
+    if (!brevoRes.ok) {
+      console.error("Brevo error:", brevoData);
       return new Response(
-        JSON.stringify({ error: "Failed to send email", details: resendData }),
+        JSON.stringify({ error: "Failed to send email", details: brevoData }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     return new Response(
-      JSON.stringify({ success: true, id: resendData.id }),
+      JSON.stringify({ success: true, messageId: brevoData.messageId }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
