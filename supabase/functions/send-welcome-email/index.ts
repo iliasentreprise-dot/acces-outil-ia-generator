@@ -53,13 +53,13 @@ Deno.serve(async (req) => {
                 'Cet outil est normalement <strong style="color:#F5F0E8;">réservé aux membres de la formation DropDigital</strong>.<br>Tu peux la découvrir ici :' +
               '</td></tr>' +
               '<tr><td style="padding-bottom:32px;">' +
-                '<a href="https://systemedigitalpirate.lovable.app" target="_blank" style="display:inline-block;border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:10px 24px;font-size:11px;letter-spacing:2px;text-decoration:none;border-radius:2px;">🏴‍☠️ VOIR LA FORMATION DROPDIGITAL</a>' +
+                "<a href='https://systemedigitalpirate.lovable.app' target='_blank' style='display:inline-block;border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:10px 24px;font-size:11px;letter-spacing:2px;text-decoration:none;border-radius:2px;'>🏴‍☠️ VOIR LA FORMATION DROPDIGITAL</a>" +
               '</td></tr>' +
               '<tr><td style="font-size:14px;line-height:1.9;color:#B0A898;padding-bottom:28px;">' +
                 'Mais parce que tu es resté <strong style="color:#F5F0E8;">jusqu\'au bout du live</strong>, voici ton accès gratuit à l\'outil :' +
               '</td></tr>' +
               '<tr><td align="center" style="padding-bottom:8px;">' +
-                '<a href="https://outil-carousel-generator.lovable.app" target="_blank" style="display:inline-block;background:#C9A84C;color:#060608;padding:18px 40px;font-weight:700;font-size:13px;text-decoration:none;letter-spacing:2px;border-radius:2px;">⚡ ACCÉDER À L\'OUTIL GRATUITEMENT</a>' +
+                "<a href='https://outil-carousel-generator.lovable.app' target='_blank' style='display:inline-block;background:#C9A84C;color:#060608;padding:18px 40px;font-weight:700;font-size:13px;text-decoration:none;letter-spacing:2px;border-radius:2px;'>⚡ ACCÉDER À L'OUTIL GRATUITEMENT</a>" +
               '</td></tr>' +
               '<tr><td align="center" style="padding-bottom:32px;">' +
                 '<p style="font-size:11px;color:#8B6914;letter-spacing:1px;margin:8px 0 0;">Ebook + page de vente générés en moins de 5 minutes.</p>' +
