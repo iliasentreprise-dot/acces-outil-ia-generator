@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     }
 
     try {
-      await fetch(`${supabaseUrl}/functions/v1/send-welcome-email`, {
+      const emailRes = await fetch(`${supabaseUrl}/functions/v1/send-welcome-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,8 +47,10 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({ prenom, email }),
       });
+      const emailData = await emailRes.json();
+      console.log("Email result:", JSON.stringify(emailData));
     } catch (emailErr) {
-      console.error("Email function error:", emailErr);
+      console.error("Email function error:", String(emailErr));
     }
 
     return new Response(
