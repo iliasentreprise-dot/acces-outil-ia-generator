@@ -152,6 +152,12 @@ const Index = () => {
               <h2 className="text-3xl font-bold mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>C'est <span className="text-primary">parti</span> !</h2>
               <p className="text-sm text-muted-foreground mb-7 max-w-sm mx-auto leading-relaxed">Le Générateur DropDigital vient d'être envoyé à ton adresse email. Vérifie ta boîte de réception — et les spams si besoin.</p>
               <div className="bg-primary/5 border border-primary/20 rounded p-4 text-xs text-primary tracking-wider mb-5">📬 Ouvre ton email pour accéder à l'outil DropDigital</div>
+              <div className="mt-4 border border-red-500 bg-red-500/10 rounded px-4 py-3 flex items-start gap-2">
+                <span className="text-red-400 text-lg">⚠️</span>
+                <p className="text-red-400 text-xs leading-relaxed text-left">
+                  <strong>ATTENTION !</strong> L'email peut arriver dans tes <strong>SPAMS</strong>. Pense à vérifier ton dossier spam si tu ne vois pas l'email dans ta boîte de réception.
+                </p>
+              </div>
               <p className="text-[11px] text-muted-foreground tracking-wider">Profite bien — c'est un cadeau.</p>
             </div>
           )}
