@@ -12,13 +12,40 @@ const OPTS = [
   { label: "1 000€", value: "1000" }, { label: "3 000€", value: "3000" }, { label: "10K+", value: "10000+" },
 ];
 
+const buildTemplate = (prenom: string) => `Objet : ⚡ Ton outil DropDigital est prêt
+
+Salut ${prenom},
+
+Félicitations — tu viens d'avoir accès à l'un des outils les plus puissants du marché francophone.
+
+Cet outil est normalement réservé aux membres de la formation DropDigital.
+👉 Découvre la formation ici : https://systemedigitalpirate.lovable.app
+
+Mais parce que tu es resté jusqu'au bout du live, voici ton accès gratuit à l'outil :
+
+⚡ ACCÉDER À L'OUTIL GRATUITEMENT :
+👉 https://dropdigital-generator.lovable.app
+
+Ebook + page de vente générés en moins de 5 minutes.
+
+Profite bien. — DropDigital`;
+
 const Admin = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [authChecked, setAuthChecked] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+
+  const copyTemplate = async () => {
+    if (!selectedLead) return;
+    await navigator.clipboard.writeText(buildTemplate(selectedLead.prenom));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
@@ -90,7 +117,7 @@ const Admin = () => {
               {loading ? (<tr><td colSpan={6} className="text-center py-12 text-muted-foreground">Chargement...</td></tr>)
               : filtered.length === 0 ? (<tr><td colSpan={6} className="text-center py-12 text-muted-foreground">Aucun lead trouvé</td></tr>)
               : filtered.map((l) => (
-                <tr key={l.id} className="border-b border-border/50 hover:bg-secondary/50 transition-colors">
+                <tr key={l.id} onClick={() => setSelectedLead(l)} className="border-b border-border/50 hover:bg-secondary/50 transition-colors cursor-pointer">
                   <td className="px-4 py-3 font-medium">{l.prenom}</td><td className="px-4 py-3">{l.nom}</td>
                   <td className="px-4 py-3 text-muted-foreground">{l.email}</td><td className="px-4 py-3 text-muted-foreground">{l.telephone || "—"}</td>
                   <td className="px-4 py-3"><span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-primary/10 text-primary border border-primary/20">{l.objectif_revenu ? `${l.objectif_revenu}€` : "—"}</span></td>
@@ -101,6 +128,29 @@ const Admin = () => {
           </table>
         </div>
       </main>
+
+      {selectedLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setSelectedLead(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl rounded-lg border border-primary/40 shadow-2xl" style={{ backgroundColor: "#0D0D10" }}>
+            <div className="flex items-center justify-between border-b border-primary/20 px-6 py-4">
+              <h2 className="text-lg font-light text-primary" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                Template Gmail — {selectedLead.prenom} {selectedLead.nom}
+              </h2>
+              <button onClick={() => setSelectedLead(null)} className="text-muted-foreground hover:text-foreground text-xl leading-none">×</button>
+            </div>
+            <div className="px-6 py-5">
+              <p className="text-xs text-muted-foreground mb-2">Destinataire : <span className="text-foreground">{selectedLead.email}</span></p>
+              <pre className="whitespace-pre-wrap text-sm text-foreground/90 bg-background/50 border border-border rounded p-4 max-h-[50vh] overflow-y-auto font-sans">{buildTemplate(selectedLead.prenom)}</pre>
+            </div>
+            <div className="flex items-center justify-end gap-3 border-t border-primary/20 px-6 py-4">
+              <button onClick={() => setSelectedLead(null)} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition">Fermer</button>
+              <button onClick={copyTemplate} className="px-4 py-2 text-sm font-medium rounded bg-primary text-primary-foreground hover:bg-primary/90 transition">
+                {copied ? "✓ Copié !" : "📋 Copier le template"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
