@@ -117,7 +117,7 @@ const Admin = () => {
               {loading ? (<tr><td colSpan={6} className="text-center py-12 text-muted-foreground">Chargement...</td></tr>)
               : filtered.length === 0 ? (<tr><td colSpan={6} className="text-center py-12 text-muted-foreground">Aucun lead trouvé</td></tr>)
               : filtered.map((l) => (
-                <tr key={l.id} className="border-b border-border/50 hover:bg-secondary/50 transition-colors">
+                <tr key={l.id} onClick={() => setSelectedLead(l)} className="border-b border-border/50 hover:bg-secondary/50 transition-colors cursor-pointer">
                   <td className="px-4 py-3 font-medium">{l.prenom}</td><td className="px-4 py-3">{l.nom}</td>
                   <td className="px-4 py-3 text-muted-foreground">{l.email}</td><td className="px-4 py-3 text-muted-foreground">{l.telephone || "—"}</td>
                   <td className="px-4 py-3"><span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-primary/10 text-primary border border-primary/20">{l.objectif_revenu ? `${l.objectif_revenu}€` : "—"}</span></td>
