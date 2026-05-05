@@ -38,20 +38,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    try {
-      const emailRes = await fetch(`${supabaseUrl}/functions/v1/send-welcome-email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${supabaseKey}`,
-        },
-        body: JSON.stringify({ prenom, email }),
-      });
-      const emailData = await emailRes.json();
-      console.log("Email result:", JSON.stringify(emailData));
-    } catch (emailErr) {
-      console.error("Email function error:", String(emailErr));
-    }
+    // L'envoi d'email automatique est désactivé pour l'instant.
+    // Les leads sont sauvegardés en base et visibles dans le dashboard Admin.
+    // L'email de bienvenue est envoyé manuellement depuis Gmail.
 
     return new Response(
       JSON.stringify({ success: true }),
