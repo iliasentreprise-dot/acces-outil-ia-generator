@@ -128,6 +128,29 @@ const Admin = () => {
           </table>
         </div>
       </main>
+
+      {selectedLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setSelectedLead(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl rounded-lg border border-primary/40 shadow-2xl" style={{ backgroundColor: "#0D0D10" }}>
+            <div className="flex items-center justify-between border-b border-primary/20 px-6 py-4">
+              <h2 className="text-lg font-light text-primary" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                Template Gmail — {selectedLead.prenom} {selectedLead.nom}
+              </h2>
+              <button onClick={() => setSelectedLead(null)} className="text-muted-foreground hover:text-foreground text-xl leading-none">×</button>
+            </div>
+            <div className="px-6 py-5">
+              <p className="text-xs text-muted-foreground mb-2">Destinataire : <span className="text-foreground">{selectedLead.email}</span></p>
+              <pre className="whitespace-pre-wrap text-sm text-foreground/90 bg-background/50 border border-border rounded p-4 max-h-[50vh] overflow-y-auto font-sans">{buildTemplate(selectedLead.prenom)}</pre>
+            </div>
+            <div className="flex items-center justify-end gap-3 border-t border-primary/20 px-6 py-4">
+              <button onClick={() => setSelectedLead(null)} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition">Fermer</button>
+              <button onClick={copyTemplate} className="px-4 py-2 text-sm font-medium rounded bg-primary text-primary-foreground hover:bg-primary/90 transition">
+                {copied ? "✓ Copié !" : "📋 Copier le template"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
