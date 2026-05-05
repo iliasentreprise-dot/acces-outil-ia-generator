@@ -12,13 +12,40 @@ const OPTS = [
   { label: "1 000€", value: "1000" }, { label: "3 000€", value: "3000" }, { label: "10K+", value: "10000+" },
 ];
 
+const buildTemplate = (prenom: string) => `Objet : ⚡ Ton outil DropDigital est prêt
+
+Salut ${prenom},
+
+Félicitations — tu viens d'avoir accès à l'un des outils les plus puissants du marché francophone.
+
+Cet outil est normalement réservé aux membres de la formation DropDigital.
+👉 Découvre la formation ici : https://systemedigitalpirate.lovable.app
+
+Mais parce que tu es resté jusqu'au bout du live, voici ton accès gratuit à l'outil :
+
+⚡ ACCÉDER À L'OUTIL GRATUITEMENT :
+👉 https://dropdigital-generator.lovable.app
+
+Ebook + page de vente générés en moins de 5 minutes.
+
+Profite bien. — DropDigital`;
+
 const Admin = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [authChecked, setAuthChecked] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+
+  const copyTemplate = async () => {
+    if (!selectedLead) return;
+    await navigator.clipboard.writeText(buildTemplate(selectedLead.prenom));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
