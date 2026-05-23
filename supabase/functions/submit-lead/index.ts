@@ -38,9 +38,21 @@ Deno.serve(async (req) => {
       );
     }
 
-    // L'envoi d'email automatique est désactivé pour l'instant.
-    // Les leads sont sauvegardés en base et visibles dans le dashboard Admin.
-    // L'email de bienvenue est envoyé manuellement depuis Gmail.
+    const welcomeRes = await fetch(
+      `${supabaseUrl}/functions/v1/send-welcome-email`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${supabaseKey}`,
+        },
+        body: JSON.stringify({ prenom, email }),
+      }
+    );
+
+    if (!welcomeRes.ok) {
+      console.error("Welcome email error:", await welcomeRes.text());
+    }
 
     return new Response(
       JSON.stringify({ success: true }),
