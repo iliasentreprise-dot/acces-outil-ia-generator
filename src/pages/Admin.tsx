@@ -7,6 +7,14 @@ interface Lead {
   telephone: string | null; objectif_revenu: string | null; created_at: string;
 }
 
+interface BulkSendState {
+  running: boolean;
+  done: number;
+  total: number;
+  errors: number;
+  finished: boolean;
+}
+
 const OPTS = [
   { label: "Tous", value: "all" }, { label: "500€", value: "500" },
   { label: "1 000€", value: "1000" }, { label: "3 000€", value: "3000" }, { label: "10K+", value: "10000+" },
@@ -38,6 +46,7 @@ const Admin = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [copied, setCopied] = useState(false);
+  const [bulk, setBulk] = useState<BulkSendState>({ running: false, done: 0, total: 0, errors: 0, finished: false });
   const navigate = useNavigate();
 
   const copyTemplate = async () => {
@@ -65,6 +74,25 @@ const Admin = () => {
   }, [navigate]);
 
   const logout = async () => { await supabase.auth.signOut(); navigate("/auth"); };
+
+  const sendToAll = async () => {
+    const { data, error } = await supabase.from("leads").select("prenom, email");
+    if (error || !data) return;
+    const list = data.filter((l) => l.email);
+    setBulk({ running: true, done: 0, total: list.length, errors: 0, finished: false });
+    let errors = 0;
+    for (let i = 0; i < list.length; i++) {
+      try {
+        const res = await supabase.functions.invoke("send-welcome-email", {
+          body: { prenom: list[i].prenom, email: list[i].email },
+        });
+        if (res.error) errors++;
+      } catch { errors++; }
+      setBulk((prev) => ({ ...prev, done: i + 1, errors }));
+      if (i < list.length - 1) await new Promise((r) => setTimeout(r, 200));
+    }
+    setBulk((prev) => ({ ...prev, running: false, finished: true }));
+  };
 
   const filtered = leads.filter((l) => {
     const mf = filter === "all" || l.objectif_revenu === filter;
@@ -104,11 +132,47 @@ const Admin = () => {
               <button key={o.value} onClick={() => setFilter(o.value)} className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${filter === o.value ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/50"}`}>{o.label}</button>
             ))}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <input placeholder="Rechercher..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-input border border-border rounded px-3 py-2 text-sm w-56 focus:border-primary focus:outline-none" />
             <button onClick={exportCSV} className="border border-primary/30 text-primary hover:bg-primary/10 px-4 py-2 text-sm rounded transition">CSV</button>
+            <button
+              onClick={sendToAll}
+              disabled={bulk.running}
+              className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 text-sm font-medium rounded transition"
+            >
+              {bulk.running ? `Envoi... ${bulk.done}/${bulk.total}` : "📧 Envoyer à tous"}
+            </button>
           </div>
         </div>
+
+        {(bulk.running || bulk.finished) && (
+          <div className="mb-6 bg-card border border-purple-500/30 rounded-lg p-4">
+            {bulk.running && (
+              <>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Envoi en cours...</span>
+                  <span className="text-sm font-medium text-purple-400">{bulk.done} / {bulk.total}</span>
+                </div>
+                <div className="w-full h-2 bg-border rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-purple-500 transition-all duration-200 rounded-full"
+                    style={{ width: bulk.total > 0 ? `${(bulk.done / bulk.total) * 100}%` : "0%" }}
+                  />
+                </div>
+              </>
+            )}
+            {bulk.finished && (
+              <div className="flex items-center gap-3">
+                <span className="text-green-400 text-lg">✓</span>
+                <span className="text-sm text-foreground">
+                  <strong className="text-green-400">{bulk.done - bulk.errors} emails envoyés avec succès</strong>
+                  {bulk.errors > 0 && <span className="text-red-400 ml-2">· {bulk.errors} erreur{bulk.errors > 1 ? "s" : ""}</span>}
+                </span>
+                <button onClick={() => setBulk({ running: false, done: 0, total: 0, errors: 0, finished: false })} className="ml-auto text-xs text-muted-foreground hover:text-foreground">Fermer</button>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="bg-card border border-border rounded-lg overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
